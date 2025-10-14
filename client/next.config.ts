@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    domains: ["news-admin-dashboard-d0va.onrender.com"],
+  },
 };
 
 export default nextConfig;

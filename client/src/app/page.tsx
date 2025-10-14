@@ -28,11 +28,15 @@ export default function Home() {
             key={e.id}
             className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition cursor-pointer"
           >
-            <Image
-              src={`https://news-admin-dashboard-d0va.onrender.com/uploads/${e.ImgUrl}`}
-              alt={e.title}
-              className="w-full h-48 object-cover"
-            />
+            <div className="relative w-full h-48">
+              <Image
+                src={`https://news-admin-dashboard-d0va.onrender.com/uploads/${e.ImgUrl}`}
+                alt={e.title}
+                fill
+                className="object-cover rounded-t-xl"
+              />
+            </div>
+
             <div className="p-4">
               <p className="text-sm text-gray-500 mb-2">
                 {new Date(e.createdAt).toLocaleDateString()}

@@ -37,9 +37,13 @@ const LoginPage: React.FC = () => {
       },
       onError: (error: unknown) => {
         let message = "Email yoki parol noto‘g‘ri!";
+
         if (error instanceof AxiosError) {
           message = error.response?.data?.message || message;
+        } else if (error instanceof Error) {
+          message = error.message || message;
         }
+
         toast.error(message);
         console.error("Login error:", error);
       },

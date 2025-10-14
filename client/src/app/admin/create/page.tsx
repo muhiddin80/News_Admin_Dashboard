@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import toast from "react-hot-toast";
 import { useCreateNew, useUpdateNew, useGetAllNews } from "@/hooks";
 import { News } from "@/types/news";
 
@@ -25,6 +24,12 @@ const NewsForm = () => {
     img: null,
   });
 
+  const [errors, setErrors] = useState({
+    title: "",
+    content: "",
+    contentUrl: "",
+  });
+
   useEffect(() => {
     if (editingNews) {
       setFormData({
@@ -35,6 +40,18 @@ const NewsForm = () => {
       });
     }
   }, [editingNews]);
+
+  const validate = () => {
+    const newErrors = { title: "", content: "", contentUrl: "" };
+    if (!formData.title) newErrors.title = "Sarlavha kiritilishi shart!";
+    if (!formData.content) newErrors.content = "Tavsif kiritilishi shart!";
+    else if (formData.content.length < 10)
+      newErrors.content = "Tavsif 10 ta harfdan qisqa bo‘lmasligi kerak!";
+    if (!formData.contentUrl)
+      newErrors.contentUrl = "Sayt URL manzili kiritilishi shart!";
+    setErrors(newErrors);
+    return !Object.values(newErrors).some((e) => e);
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -52,58 +69,44 @@ const NewsForm = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (
-      !formData.title ||
-      !formData.content ||
-      !formData.contentUrl ||
-      !formData.img
-    ) {
-      toast.error("Iltimos, barcha maydonlarni to‘ldiring!");
-      return;
-    }
+    if (!validate()) return;
 
     const user = localStorage.getItem("user");
     const parsedUser = user ? JSON.parse(user) : null;
     const authorId = parsedUser?.id;
 
-    if (!authorId) {
-      toast.error("Foydalanuvchi topilmadi! Iltimos, qayta kiring.");
-      return;
-    }
+    if (!authorId) return;
 
-    const payload = {
-      ...formData,
-      authorId,
-    };
+    const payload = { ...formData, authorId };
 
     if (id) {
       updateNews.mutate(
         { id, payload },
         {
-          onSuccess: () => toast.success("Yangilik yangilandi!"),
-          onError: () => toast.error("Yangilashda xatolik yuz berdi!"),
+          onSuccess: () => {},
+          onError: () => {},
         }
       );
     } else {
       createNews.mutate(payload, {
         onSuccess: () => {
-          toast.success("Yangilik yaratildi!");
           setFormData({ title: "", content: "", contentUrl: "", img: null });
         },
-        onError: () => toast.error("Yaratishda xatolik yuz berdi!"),
+        onError: () => {},
       });
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5 w-[80%]">
-      <div className="flex flex-col bg-white p-6 rounded-2xl shadow-lg gap-4">
+      <div className="flex flex-col bg-white p-6 rounded-2xl shadow-lg gap-2">
         <label className="text-xl font-semibold" htmlFor="title">
           Sarlavha*
         </label>
         <input
-          className="outline-none border border-gray-400 shadow-md rounded-xl p-2 px-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+          className={`outline-none border ${
+            errors.title ? "border-red-500" : "border-gray-400"
+          } shadow-md rounded-xl p-2 px-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200`}
           type="text"
           name="title"
           id="title"
@@ -111,28 +114,42 @@ const NewsForm = () => {
           value={formData.title || ""}
           onChange={handleChange}
         />
+        <p className="text-gray-500 text-sm">
+          Sarlavha qisqa, ammo mazmunli bo‘lishi kerak.
+        </p>
+        {errors.title && <p className="text-red-500 text-sm">{errors.title}</p>}
       </div>
 
-      <div className="flex flex-col bg-white p-6 rounded-2xl shadow-lg gap-4">
+      <div className="flex flex-col bg-white p-6 rounded-2xl shadow-lg gap-2">
         <label className="text-lg font-medium" htmlFor="content">
           Tavsif*
         </label>
         <textarea
-          className="outline-none border border-gray-400 shadow-md rounded-xl p-2 px-3 h-32 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+          className={`outline-none border ${
+            errors.content ? "border-red-500" : "border-gray-400"
+          } shadow-md rounded-xl p-2 px-3 h-32 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200`}
           name="content"
           id="content"
           placeholder="tavsif..."
           value={formData.content || ""}
           onChange={handleChange}
         />
+        <p className="text-gray-500 text-sm">
+          Tavsif 10 ta harfdan qisqa bo‘lmasligi kerak.
+        </p>
+        {errors.content && (
+          <p className="text-red-500 text-sm">{errors.content}</p>
+        )}
       </div>
 
-      <div className="flex flex-col bg-white p-6 rounded-2xl shadow-lg gap-4">
+      <div className="flex flex-col bg-white p-6 rounded-2xl shadow-lg gap-2">
         <label className="text-lg font-medium" htmlFor="contentUrl">
           Sayt URL*
         </label>
         <input
-          className="outline-none border border-gray-400 shadow-md rounded-xl p-2 px-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+          className={`outline-none border ${
+            errors.contentUrl ? "border-red-500" : "border-gray-400"
+          } shadow-md rounded-xl p-2 px-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200`}
           type="text"
           name="contentUrl"
           id="contentUrl"
@@ -140,6 +157,12 @@ const NewsForm = () => {
           value={formData.contentUrl || ""}
           onChange={handleChange}
         />
+        <p className="text-gray-500 text-sm">
+          Bu yangilik manbasi uchun to‘liq havola bo‘lishi kerak.
+        </p>
+        {errors.contentUrl && (
+          <p className="text-red-500 text-sm">{errors.contentUrl}</p>
+        )}
       </div>
 
       <div className="flex flex-col bg-white p-5 rounded-2xl shadow gap-4">
@@ -160,28 +183,39 @@ const NewsForm = () => {
           <div className="flex items-center justify-center w-full h-12 border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 cursor-pointer">
             <span className="text-gray-600 font-medium">
               {formData.img
-                ? (formData.img as File).name
+                ? typeof formData.img === "string"
+                  ? formData.img
+                  : (formData.img as File).name
                 : "Yuklash uchun bosing"}
             </span>
           </div>
         </div>
+        <p className="text-gray-500 text-sm">
+          Rasm sifatli va mavzuga mos bo‘lishi kerak.
+        </p>
       </div>
 
       <div className="w-full flex justify-end gap-5 items-center mt-4">
         <button
           type="button"
+          disabled={createNews.isPending || updateNews.isPending}
           onClick={() =>
             setFormData({ title: "", content: "", contentUrl: "", img: null })
           }
-          className="shadow bg-white p-3 rounded-2xl hover:bg-gray-100 transition"
+          className="shadow bg-white p-3 rounded-2xl hover:bg-gray-100 transition disabled:opacity-60"
         >
           Bekor qilish
         </button>
         <button
           type="submit"
-          className="shadow bg-black text-white p-3 rounded-2xl hover:bg-gray-800 transition"
+          disabled={createNews.isPending || updateNews.isPending}
+          className="shadow bg-black text-white p-3 rounded-2xl hover:bg-gray-800 transition disabled:opacity-60"
         >
-          {id ? "Yangilash" : "Yaratish"}
+          {createNews.isPending || updateNews.isPending
+            ? "Saqlanmoqda..."
+            : id
+            ? "Yangilash"
+            : "Yaratish"}
         </button>
       </div>
     </form>

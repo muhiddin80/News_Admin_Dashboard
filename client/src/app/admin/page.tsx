@@ -17,21 +17,21 @@ const AdminPage = () => {
   }, [allNews]);
 
   const handleDelete = (id: string | number) => {
-    if (!confirm("Are you sure you want to delete this news?")) return;
+    if (!confirm("Yangilikni o‘chirmoqchimisiz?")) return;
 
     deleteNew.mutate(id, {
       onSuccess: () => {
-        toast.success("News deleted successfully!");
         setNewsList((prev) => prev.filter((n) => n.id !== id));
+        // toast.success("Yangilik muvaffaqiyatli o‘chirildi!");
       },
       onError: () => {
-        toast.error("Failed to delete news!");
+        toast.error("Yangilikni o‘chirishda xatolik yuz berdi!");
       },
     });
   };
 
-  if (isLoading) return <div>Loading news...</div>;
-  if (isError) return <div>Error loading news</div>;
+  if (isLoading) return <div>Yuklanmoqda...</div>;
+  if (isError) return <div>Xatolik yuz berdi!</div>;
 
   return (
     <div className="flex flex-col gap-4">
@@ -39,7 +39,7 @@ const AdminPage = () => {
         onClick={() => router.push("/admin/create")}
         className="self-end bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition"
       >
-        + Add News
+        + Yangilik qo‘shish
       </button>
 
       {newsList.map((news) => (

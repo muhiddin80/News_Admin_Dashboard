@@ -20,7 +20,7 @@ const NewsDetailPage = () => {
     );
 
   const imageUrl = news.ImgUrl
-    ? `http://localhost:4000/uploads/${news.ImgUrl}`
+    ? `https://news-admin-dashboard-d0va.onrender.com/uploads/${news.ImgUrl}`
     : null;
 
   return (

@@ -28,7 +28,7 @@ export default function Home() {
             className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition cursor-pointer"
           >
             <img
-              src={`http://localhost:4000/uploads/${e.ImgUrl}`}
+              src={`https://news-admin-dashboard-d0va.onrender.com/uploads/${e.ImgUrl}`}
               alt={e.title}
               className="w-full h-48 object-cover"
             />

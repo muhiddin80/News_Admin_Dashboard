@@ -1,6 +1,6 @@
 import axios from "axios";
 
 export const customAxios = axios.create({
-  baseURL: "http://localhost:4000/api",
+  baseURL: "https://news-admin-dashboard-d0va.onrender.com/api",
   withCredentials: true,
 });

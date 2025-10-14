@@ -14,6 +14,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { NewsService } from './news.service';
 import { CreateNewsDto, UpdateNewsDto } from './dtos';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { CheckFileSizePipe, CheckMimeTypePipe } from 'src/pipes';
 
 @Controller('news')
 export class NewsController {
@@ -65,7 +66,11 @@ export class NewsController {
   })
   async create(
     @Body() payload: CreateNewsDto,
-    @UploadedFile() img: Express.Multer.File,
+    @UploadedFile(
+      new CheckFileSizePipe(3000000),
+      new CheckMimeTypePipe(['png', 'jpg', 'jpeg', 'jfif']),
+    )
+    img: Express.Multer.File,
   ) {
     return this.newsService.create(payload, img);
   }
@@ -107,7 +112,11 @@ export class NewsController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() payload: UpdateNewsDto,
-    @UploadedFile() img: Express.Multer.File,
+    @UploadedFile(
+      new CheckFileSizePipe(3000000),
+      new CheckMimeTypePipe(['png', 'jpg', 'jpeg', 'jfif']),
+    )
+    img: Express.Multer.File,
   ) {
     return this.newsService.update(id, payload, img);
   }

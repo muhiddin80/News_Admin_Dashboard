@@ -2,6 +2,7 @@
 
 import { useGetAllNews } from "@/hooks";
 import { ArrowLeft } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
@@ -27,7 +28,7 @@ export default function Home() {
             key={e.id}
             className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition cursor-pointer"
           >
-            <img
+            <Image
               src={`https://news-admin-dashboard-d0va.onrender.com/uploads/${e.ImgUrl}`}
               alt={e.title}
               className="w-full h-48 object-cover"
@@ -44,7 +45,7 @@ export default function Home() {
                 onClick={() => router.push(`/news/${e.id}`)}
                 className="text-blue-600 hover:underline flex items-center"
               >
-                <ArrowLeft size={20} /> Ko'proq o'qish
+                <ArrowLeft size={20} /> Ko&apos;proq o&apos;qish
               </button>
             </div>
           </div>

@@ -5,8 +5,12 @@ export const getNews = async (): Promise<News[] | undefined> => {
   try {
     const res = await customAxios.get("/news");
     return res.data.data;
-  } catch (error) {
-    console.log("Error while fetching news");
+  } catch (error: unknown) {
+    console.log(
+      "Error while fetching news",
+      error instanceof Error ? error.message : error
+    );
+    throw error;
   }
 };
 
@@ -16,8 +20,12 @@ export const getNew = async (
   try {
     const res = await customAxios.get(`/news/${id}`);
     return res.data.data;
-  } catch (error) {
-    console.log("Error while fetching new");
+  } catch (error: unknown) {
+    console.log(
+      `Error while fetching news with id ${id}`,
+      error instanceof Error ? error.message : error
+    );
+    throw error;
   }
 };
 
@@ -28,16 +36,19 @@ export const createNew = async (payload: Partial<News>) => {
     if (payload.content) formData.append("content", payload.content);
     if (payload.contentUrl) formData.append("contentUrl", payload.contentUrl);
     if (payload.img) formData.append("img", payload.img);
-    if (payload.authorId) formData.append("authorId", payload.authorId);
+    if (payload.authorId) formData.append("authorId", String(payload.authorId));
 
     const res = await customAxios.post("/news", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
 
-    console.log("Created something");
+    console.log("News created successfully");
     return res.data.data;
-  } catch (error) {
-    console.log("Error while creating new", error);
+  } catch (error: unknown) {
+    console.log(
+      "Error while creating news",
+      error instanceof Error ? error.message : error
+    );
     throw error;
   }
 };
@@ -58,10 +69,13 @@ export const updateNew = async (
       headers: { "Content-Type": "multipart/form-data" },
     });
 
-    console.log("Updated successfully");
+    console.log("News updated successfully");
     return res.data.data;
-  } catch (error) {
-    console.log("Error while updating new", error);
+  } catch (error: unknown) {
+    console.log(
+      `Error while updating news with id ${id}`,
+      error instanceof Error ? error.message : error
+    );
     throw error;
   }
 };
@@ -69,8 +83,13 @@ export const updateNew = async (
 export const deleteNew = async (id: string | number) => {
   try {
     const res = await customAxios.delete(`/news/${id}`);
+    console.log("News deleted successfully");
     return res.data.data;
-  } catch (error) {
-    console.log("Error while deleting new");
+  } catch (error: unknown) {
+    console.log(
+      `Error while deleting news with id ${id}`,
+      error instanceof Error ? error.message : error
+    );
+    throw error;
   }
 };

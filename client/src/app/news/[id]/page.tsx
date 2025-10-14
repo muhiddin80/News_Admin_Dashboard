@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useGetNew } from "@/hooks";
 import React from "react";
 import { ArrowLeft } from "lucide-react";
+import Image from "next/image";
 
 const NewsDetailPage = () => {
   const params = useParams();
@@ -33,10 +34,13 @@ const NewsDetailPage = () => {
       </button>
 
       {imageUrl && (
-        <img
+        <Image
           src={imageUrl}
           alt={news.title}
-          className="w-full rounded-lg mb-6 shadow-md"
+          width={800}
+          height={500}
+          className="rounded-lg mb-6 shadow-md"
+          priority
         />
       )}
 

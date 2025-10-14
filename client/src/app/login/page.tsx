@@ -4,8 +4,10 @@ import React, { useState } from "react";
 import { useLoginUser } from "@/hooks";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { AxiosError } from "axios";
+import { User } from "@/types/user";
 
-const LoginPage = () => {
+const LoginPage: React.FC = () => {
   const router = useRouter();
   const login = useLoginUser();
 
@@ -19,7 +21,7 @@ const LoginPage = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!formData.email || !formData.password) {
@@ -28,16 +30,17 @@ const LoginPage = () => {
     }
 
     login.mutate(formData, {
-      onSuccess: (data) => {
-        console.log(data);
+      onSuccess: (data: User) => {
         toast.success("Tizimga muvaffaqiyatli kirildi!");
         localStorage.setItem("user", JSON.stringify(data));
         router.push("/admin");
       },
-      onError: (error: any) => {
-        toast.error(
-          error?.response?.data?.message || "Email yoki parol noto‘g‘ri!"
-        );
+      onError: (error: unknown) => {
+        let message = "Email yoki parol noto‘g‘ri!";
+        if (error instanceof AxiosError) {
+          message = error.response?.data?.message || message;
+        }
+        toast.error(message);
         console.error("Login error:", error);
       },
     });
